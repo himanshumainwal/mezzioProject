@@ -12,7 +12,7 @@ declare(strict_types=1);
 
 return [
     'dependencies' => [
-        'factories' => [
+        'factories' => [    
             Module\Handler\Handler::class => Module\Handler\HandlerFactory::class,
         ],
     ],
