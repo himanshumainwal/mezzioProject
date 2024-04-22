@@ -38,9 +38,9 @@ use Psr\Container\ContainerInterface;
  */
 
 return static function (Application $app, MiddlewareFactory $factory, ContainerInterface $container): void {
-    $app->get('/', App\Handler\HomePageHandler::class, 'home');
-    $app->get('/about', Module\Handler\Handler::class, 'about');
-    $app->get('/login', Module\Handler\Handler::class, 'login');
-    $app->get('/register', Module\Handler\Handler::class,  'register');
+    $app->route('/home', App\Handler\HomePageHandler::class,['GET', 'POST'], 'home');
+    $app->route('/about', Module\Handler\Handler::class,['GET', 'POST'], 'about');
+    $app->route('/login', Module\Handler\Handler::class,['GET', 'POST'], 'login');
+    $app->route('/register', Module\Handler\Handler::class,['GET', 'POST'],  'register');
     $app->get('/api/ping', App\Handler\PingHandler::class, 'api.ping');
 };

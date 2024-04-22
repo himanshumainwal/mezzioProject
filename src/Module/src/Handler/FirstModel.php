@@ -69,29 +69,39 @@ class FirstModel
     }
 
 
-    public function verifiedUser( $email, $password)
+    public function verifiedUser($email, $password)
     {
         // Construct the SQL query to fetch the user record based on the provided email
         $sql = new Sql($this->dbObj);
         $select = $sql->select('mezzio_pro');
         // Add a WHERE condition to filter by email
-        $select->where(['email' => $email , 'password' => $password]);
-    
+        $select->where(['email' => $email, 'password' => $password]);
+
         // Prepare the SQL statement and execute it
         $statement = $sql->prepareStatementForSqlObject($select);
         $result = $statement->execute();
-    
+
         // Fetch the user record
         $user = $result->current();
-    
         // Check if a user with the provided email exists and if the password matches
-        if ($user && password_verify($password, $user['password'])) {
+        if ($email == $user['email'] && $password == $user['password']) {
             // Password matches, return the user object
+            // print_r($user);die;
             return $user;
         }
-    
+
         // No user found or password does not match, return null
         return null;
     }
-    
+
+    public function redirectPage($msg, $path)
+    {
+        return $content = '
+        <script>
+            alert("'.$msg.'");
+            window.location.href = "/' . $path . '"; // Redirect to the register page
+        </script>
+    ';
+        // Return the HTML response with the script tag and redirection
+    }
 }
