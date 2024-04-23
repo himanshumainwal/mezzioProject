@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Module;
 
-use Laminas\ServiceManager\Factory\InvokableFactory;
+// use Laminas\ServiceManager\Factory\InvokableFactory;
 
 /**
  * The configuration provider for the Module module
@@ -34,10 +34,10 @@ class ConfigProvider
     {
         return [
             'invokables' => [
-                Handler\FirstModelFactory::class => InvokableFactory::class,
+                // Handler\HandlerFactory::class => InvokableFactory::class,
             ],
             'factories'  => [
-                Handler\FirstModel::class => Handler\FirstModelFactory::class,
+                // Handler\Handler::class => Handler\HandlerFactory::class,
             ],
         ];
     }

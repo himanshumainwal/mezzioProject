@@ -1,8 +1,9 @@
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <h1 class="text-center my-3">LogIn</h1>
 
 
-<form method="post" action="">
+<form method="post" action="/login" id="loginForm">
   <div class="form-group">
     <label for="exampleInputEmail1">Email address</label>
     <input type="email" class="form-control" name="email" aria-describedby="emailHelp" placeholder="Enter email">
@@ -13,5 +14,9 @@
     <input type="pass" class="form-control" name="pass" placeholder="Password">
   </div>
     
-  <button type="submit" class="btn btn-primary">Submit</button>
+  <button type="submit" class="btn btn-primary" id="loginBtn">Submit</button>
 </form>
+
+
+<script src="./../../../public/js/login.js" type="text/javascript">
+</script>

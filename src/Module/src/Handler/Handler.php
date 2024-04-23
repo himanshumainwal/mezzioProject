@@ -9,10 +9,10 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Laminas\Diactoros\Response\HtmlResponse;
 use Mezzio\Template\TemplateRendererInterface;
-use Module\Handler\FirstModel;
 use Laminas\Diactoros\Response\RedirectResponse;
+use Laminas\Db\Sql\Sql;
 use Mezzio\Helper\UrlHelper;
-
+use Laminas\Db\Adapter\AdapterInterface;
 
 
 class Handler implements RequestHandlerInterface
@@ -21,38 +21,38 @@ class Handler implements RequestHandlerInterface
      * @var TemplateRendererInterface
      */
     private $renderer;
-    private $modelObj;
     private $helper;
-    // private $config;
+    private $dbAdapter;
 
     public function __construct(
         TemplateRendererInterface $renderer,
-        FirstModel $model,
-        UrlHelper $helper
-        // $config 
+        UrlHelper $helper,
+        AdapterInterface $dbAdapter,
     ) {
         $this->renderer = $renderer;
-        $this->modelObj = $model;
         $this->helper = $helper;
+        $this->dbAdapter = $dbAdapter;
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
+        $path = $request->getUri()->getPath();
 
         $routeParams = [
             'data' => '/here'
         ];
-        $path = $request->getUri()->getPath();
+        $sql = new Sql($this->dbAdapter);
 
-        // Handle form submission only if it's a POST request
         if ($request->getMethod() == 'POST') {
-            // print_r($request->getMethod());die;
             $formData = $request->getParsedBody();
             // Check if the request is for registration
             if ($path == '/register') {
-                // Check if any required field is empty
                 if (empty($formData['fName']) || empty($formData['email']) || empty($formData['pass']) || empty($formData['confirmPass']) || empty($formData['mobileNumber'])) {
-                    return new HtmlResponse($this->modelObj->redirectPage('Please fill in all required fields','register'));
+
+                    return new HtmlResponse('<script>
+                                                alert("Please fill in all required fields");
+                                                window.location.href = "/register"; // Redirect to the register page
+                                            </script>');
                 }
                 $name = $formData['fName'];
                 $email = $formData['email'];
@@ -61,37 +61,71 @@ class Handler implements RequestHandlerInterface
                 $mobileNo = $formData['mobileNumber'];
 
                 if ($pass !== $confPass) {
-                    return new HtmlResponse($this->modelObj->redirectPage('Password does not match','register'));
+                    $content = '
+                                <script>
+                                    alert("Password does not match");
+                                    window.location.href = "/register"; // Redirect to the register page
+                                </script>
+                            ';
+                    return new HtmlResponse($content);
                 }
-                $result = $this->modelObj->addUser($name, $email, $pass, $mobileNo);
-                if ($result) {
-                    return new RedirectResponse(
-                        $this->helper->generate('login', $routeParams)
-                    );
-                } else {
-                    return new HtmlResponse($this->modelObj->redirectPage('Somthing wrong, Please Recheck','register'));
-                }
-            }
+                $insert = $sql->insert('mezzio_pro');
+                $insert->values([
+                    'full_name' => $name,
+                    'email' => $email,
+                    'password' => $pass,
+                    'mobile_number' => $mobileNo,
+                ]);
 
-            // Handle form submission only if it's a POST request
+                $statement = $sql->prepareStatementForSqlObject($insert);
+                $statement->execute();
+                return new RedirectResponse(
+                    $this->helper->generate('login', $routeParams)
+                );
+            } 
+            // ////////////////////////////////////////Login/////////////////////////////////////////////////////
+            // print_r($path);
+            // die();
             if ($path == '/login') {
                 if (empty($formData['email']) || empty($formData['pass'])) {
-                    return new HtmlResponse($this->modelObj->redirectPage('Please fill in all required fields','login'));
+                    $content = '
+                                <script>
+                                    alert("Please fill in all required fields");
+                                    window.location.href = "/login"; // Redirect to the register page
+                                </script>
+                            ';
+                    return new HtmlResponse($content);
                 }
 
                 $email = $formData['email'];
                 $password = $formData['pass'];
-                // Query the database to fetch the user record based on the provided email
-                $user = $this->modelObj->verifiedUser($email, $password);
+
+                $sql = new Sql($this->dbAdapter);
+                $select = $sql->select('mezzio_pro');
+                // Add a WHERE condition to filter by email
+                $select->where(['email' => $email, 'password' => $password]);
+
+                // Prepare the SQL statement and execute it
+                $statement = $sql->prepareStatementForSqlObject($select);
+                $result = $statement->execute();
+
+                // Fetch the user record
+                $user = $result->current();
 
                 // Check if a user with the provided email exists and if the password matches
-                if ($user !== null && $password == $user['password']) {
+                if ($user !== null && ($email == $user['email'] && $password == $user['password'])) {
                     // Password matches, redirect the user to the home page
                     return new HtmlResponse($this->renderer->render('app::home-page', ['user' => $user]));
                     // return new HtmlResponse($this->renderer->render('app::home-page'));
                 } else {
                     // Email or password does not match, display an error message
-                    return new HtmlResponse($this->modelObj->redirectPage('Email or password does not match','login'));
+                    $content = '
+                                <script>
+                                    alert("Email or password does not match");
+                                    window.location.href = "/login"; // Redirect to the register page
+                                </script>
+                            ';
+                    return new HtmlResponse($content);
                 }
             }
         }

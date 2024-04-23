@@ -1,7 +1,12 @@
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+
 <h1 class="text-center my-3">Register</h1>
 
 
-<form method="post" action="/register">
+<form method="post" action="/register" id="userForm">
   <div class="form-row">
     <div class="form-group col-md-6">
       <label for="inputEmail4">Full Name</label>
@@ -25,5 +30,10 @@
     <input type="number" class="form-control" name="mobileNumber" placeholder="Enter Your Mobile Number">
   </div>
  
-  <button type="submit" class="btn btn-primary">Sign in</button>
+  <button type="submit" class="btn btn-primary" id="addUserBtn">Sign in</button>
 </form>
+
+
+<!-- JavaScript -->
+<script src="./../../../public/js/register.js" type="text/javascript">
+</script>
