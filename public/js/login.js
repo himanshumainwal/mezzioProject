@@ -5,7 +5,7 @@ $(document).ready(function() {
 
         // Send AJAX request
         $.ajax({
-            url: "/login",
+            url: "/login",  
             type: "POST",
             data: formData,
             success: function(response) {
