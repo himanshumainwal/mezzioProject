@@ -1,37 +1,56 @@
+<?php
+// echo '<pre>'; 
+// print_r($errors);
+// print_r($errors['fname'][0]);
 
+?>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 
-
 <h1 class="text-center my-3">Register</h1>
-
 
 <form method="post" action="/register" id="userForm">
   <div class="form-row">
     <div class="form-group col-md-6">
       <label for="inputEmail4">Full Name</label>
       <input type="text" class="form-control" name="fName" placeholder="Enter Your Full Name">
+      <?php if (!empty($errors['fName'])): ?>
+        <p class="text-danger"><?= $errors['fName']['regexNotMatch']; ?></p>
+      <?php endif; ?>
     </div>
     <div class="form-group col-md-6">
       <label for="inputPassword4">Email</label>
       <input type="email" class="form-control" name="email" placeholder="Enter Your Email Address">
+      <?php if (!empty($errors['email'])): ?>
+        <p class="text-danger"><?= $errors['email']['regexNotMatch']; ?></p>
+      <?php endif; ?>
     </div>
   </div>
   <div class="form-group">
     <label for="inputAddress">Password</label>
     <input type="password" class="form-control" name="pass" placeholder="Enter Your Password">
+    <?php if (!empty($errors['pass'])): ?>
+      <p class="text-danger"><?= $errors['pass']['regexNotMatch']; ?></p>
+    <?php endif; ?>
   </div>
   <div class="form-group">
     <label for="inputAddress2">Confirm Password</label>
     <input type="password" class="form-control" name="confirmPass" placeholder="Confirm Your Password">
+    <?php if (!empty($errors['confirmPass'])): ?>
+      <p class="text-danger"><?= $errors['confirmPass']['regexNotMatch']; ?></p>
+    <?php endif; ?>
   </div>
   <div class="form-group">
     <label for="inputAddress2">Mobile Number</label>
     <input type="number" class="form-control" name="mobileNumber" placeholder="Enter Your Mobile Number">
+    <?php if (!empty($errors['mobileNumber'])): ?>
+      <p class="text-danger"><?= $errors['mobileNumber']['regexNotMatch']; ?></p>
+    <?php endif; ?>
   </div>
  
   <button type="submit" class="btn btn-primary" id="addUserBtn">Sign in</button>
 </form>
+
 
 
 <!-- JavaScript -->
